@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Cadastro de Funcionários</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px 0;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+            color: #f0f0f0;
+        }
+        
+        .app-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .form-section, .map-section {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 25px;
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .form-section {
+            max-width: 500px;
+        }
+        
+        .map-section {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #1a2a6c;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #1a2a6c;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            border-color: #1a2a6c;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(26, 42, 108, 0.2);
+        }
+        
+        .coordinates {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .coordinates .form-group {
+            flex: 1;
+        }
+        
+        #map {
+            height: 300px;
+            width: 100%;
+            border-radius: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+        }
+        
+        .btn {
+            background: #1a2a6c;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            background: #0e1a4d;
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn i {
+            margin-right: 10px;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .instructions {
+            background: #e9f7fe;
+            border-left: 4px solid #1a2a6c;
+            padding: 15px;
+            margin: 25px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .instructions h3 {
+            color: #1a2a6c;
+            margin-bottom: 10px;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            margin-top: 30px;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+            
+            .form-section, .map-section {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-id-card"></i> Sistema de Cadastro de Militares</h1>
+            <p>Cadastre militares com informações completas e visualize sua localização no mapa</p>
+        </header>
+        
+        <div class="instructions">
+            <h3><i class="fas fa-info-circle"></i> Instruções de Uso</h3>
+            <ol>
+                <li>Preencha todos os campos do formulário de cadastro</li>
+                <li>Digite o endereço completo para obter as coordenadas automaticamente</li>
+                <li>Verifique a localização no mapa</li>
+                <li>Clique em "Cadastrar Militar" para salvar na planilha</li>
+            </ol>
+        </div>
+        
+        <div class="app-container">
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-user-plus"></i> Cadastro</h2>
+                <form id="employeeForm">
+                    <div class="form-group">
+                        <label for="cargo"><i class="fas fa-briefcase"></i> Cargo:</label>
+                        <select id="cargo" required>
+                            <option value="">Selecione um cargo</option>
+                            <option value="sd">Soldado (sd)</option>
+                            <option value="cb">Cabo (cb)</option>
+                            <option value="sgt">Sargento (sgt)</option>
+                            <option value="sub ten">Subtenente (sub ten)</option>
+                            <option value="ten">Tenente (ten)</option>
+                            <option value="cap">Capitão (cap)</option>
+                            <option value="maj">Major (maj)</option>
+                            <option value="ten cel">Tenente-Coronel (ten cel)</option>
+                            <option value="cel">Coronel (cel)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="nome"><i class="fas fa-user"></i> Nome Completo:</label>
+                        <input type="text" id="nome" placeholder="Digite o nome completo" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="endereco"><i class="fas fa-map-marker-alt"></i> Endereço:</label>
+                        <input type="text" id="endereco" placeholder="Digite o endereço completo" required>
+                    </div>
+                    
+                    <div class="coordinates">
+                        <div class="form-group">
+                            <label for="latitude"><i class="fas fa-globe-americas"></i> Latitude:</label>
+                            <input type="text" id="latitude" readonly>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="longitude"><i class="fas fa-globe-americas"></i> Longitude:</label>
+                            <input type="text" id="longitude" readonly>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn"><i class="fas fa-save"></i> Cadastrar Militar</button>
+                </form>
+                
+                <div id="successMessage" class="success-message">
+                    <i class="fas fa-check-circle"></i> Militar cadastrado com sucesso!
+                </div>
+            </div>
+            
+            <div class="map-section">
+                <h2 class="section-title"><i class="fas fa-map"></i> Localização</h2>
+                <p>O mapa abaixo mostrará a localização do endereço fornecido:</p>
+                <div id="map"></div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Sistema de Cadastro de Militares &copy; 2023 | Desenvolvido com Google Maps API</p>
+        </footer>
+    </div>
+
+    <script>
+        // Inicializa o mapa
+        let map;
+        let marker;
+        
+        function initMap() {
+            // Centro inicial do mapa (Brasília)
+            const center = { lat: -15.793889, lng: -47.882778 };
+            
+            // Configurações do mapa
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 12,
+                center: center,
+                mapTypeId: 'roadmap',
+                styles: [
+                    {
+                        "featureType": "administrative",
+                        "elementType": "labels.text.fill",
+                        "stylers": [{"color": "#444444"}]
+                    },
+                    {
+                        "featureType": "landscape",
+                        "elementType": "all",
+                        "stylers": [{"color": "#f2f2f2"}]
+                    },
+                    {
+                        "featureType": "poi",
+                        "elementType": "all",
+                        "stylers": [{"visibility": "off"}]
+                    },
+                    {
+                        "featureType": "road",
+                        "elementType": "all",
+                        "stylers": [{"saturation": -100}, {"lightness": 45}]
+                    },
+                    {
+                        "featureType": "road.highway",
+                        "elementType": "all",
+                        "stylers": [{"visibility": "simplified"}]
+                    },
+                    {
+                        "featureType": "road.arterial",
+                        "elementType": "labels.icon",
+                        "stylers": [{"visibility": "off"}]
+                    },
+                    {
+                        "featureType": "transit",
+                        "elementType": "all",
+                        "stylers": [{"visibility": "off"}]
+                    },
+                    {
+                        "featureType": "water",
+                        "elementType": "all",
+                        "stylers": [{"color": "#1a2a6c"}, {"visibility": "on"}]
+                    }
+                ]
+            });
+            
+            // Cria o marcador inicial
+            marker = new google.maps.Marker({
+                position: center,
+                map: map,
+                title: 'Localização do funcionário'
+            });
+        }
+        
+        // Inicializa o autocomplete para o campo de endereço
+        function initAutocomplete() {
+            const input = document.getElementById('endereco');
+            const autocomplete = new google.maps.places.Autocomplete(input);
+            
+            autocomplete.addListener('place_changed', function() {
+                const place = autocomplete.getPlace();
+                
+                if (!place.geometry) {
+                    alert("Endereço não encontrado: '" + place.name + "'");
+                    return;
+                }
+                
+                // Atualiza as coordenadas
+                document.getElementById('latitude').value = place.geometry.location.lat();
+                document.getElementById('longitude').value = place.geometry.location.lng();
+                
+                // Atualiza o mapa
+                const position = {
+                    lat: place.geometry.location.lat(),
+                    lng: place.geometry.location.lng()
+                };
+                
+                map.setCenter(position);
+                map.setZoom(15);
+                marker.setPosition(position);
+            });
+        }
+        
+        // Função para enviar dados para o Google Sheets
+        async function saveToGoogleSheets(data) {
+            // Substitua com a URL do seu Web App do Google Apps Script
+            const SCRIPT_URL = '1CbezlbGred4capozHRh6znt_mTBmQu_nUdv5Z2gMr8CuoGHR11WOYx7W';
+            
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.result === 'success') {
+                    // Mostra mensagem de sucesso
+                    document.getElementById('successMessage').style.display = 'block';
+                    
+                    // Reseta o formulário
+                    document.getElementById('employeeForm').reset();
+                    
+                    // Esconde a mensagem após 3 segundos
+                    setTimeout(() => {
+                        document.getElementById('successMessage').style.display = 'none';
+                    }, 3000);
+                } else {
+                    alert('Erro ao salvar os dados: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Ocorreu um erro ao enviar os dados.');
+            }
+        }
+        
+        // Evento de envio do formulário
+        document.getElementById('employeeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const cargo = document.getElementById('cargo').value;
+            const nome = document.getElementById('nome').value;
+            const endereco = document.getElementById('endereco').value;
+            const latitude = document.getElementById('latitude').value;
+            const longitude = document.getElementById('longitude').value;
+            
+            if (!cargo || !nome || !endereco || !latitude || !longitude) {
+                alert('Por favor, preencha todos os campos e verifique o endereço.');
+                return;
+            }
+            
+            const formData = {
+                cargo: cargo,
+                nome: nome,
+                endereco: endereco,
+                latitude: latitude,
+                longitude: longitude,
+                timestamp: new Date().toISOString()
+            };
+            
+            saveToGoogleSheets(formData);
+        });
+        
+        // Inicializa o mapa e autocomplete quando a página carrega
+        window.onload = function() {
+            initMap();
+            initAutocomplete();
+        };
+    </script>
+</body>
+</html>
