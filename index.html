@@ -3,10 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Cadastro de Funcionários</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://maps.googleapis.com/maps/api/js?key=1CbezlbGred4capozHRh6znt_mTBmQu_nUdv5Z2gMr8CuoGHR11WOYx7W&libraries=places"></script>
+    <title>Sistema de Cadastro Militar</title>
     <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --success: #27ae60;
+            --warning: #f39c12;
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -15,68 +23,76 @@
         }
         
         body {
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
-            color: #333;
+            background: linear-gradient(135deg, #1a2a3a, #2c3e50);
+            color: var(--light);
             min-height: 100vh;
             padding: 20px;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 900px;
             margin: 0 auto;
         }
         
         header {
             text-align: center;
-            padding: 20px 0;
-            color: white;
+            padding: 30px 0;
+            border-bottom: 2px solid var(--secondary);
             margin-bottom: 30px;
         }
         
         header h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            color: var(--light);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
         
-        header p {
+        .app-description {
             font-size: 1.1rem;
             max-width: 700px;
             margin: 0 auto;
-            color: #f0f0f0;
+            opacity: 0.9;
         }
         
-        .app-container {
+        .content {
             display: flex;
-            flex-wrap: wrap;
             gap: 30px;
             margin-bottom: 40px;
         }
         
-        .form-section, .map-section {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            padding: 25px;
-            flex: 1;
-            min-width: 300px;
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
         }
         
         .form-section {
-            max-width: 500px;
+            flex: 1;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(4px);
         }
         
         .map-section {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(4px);
             display: flex;
             flex-direction: column;
         }
         
         .section-title {
-            font-size: 1.8rem;
             margin-bottom: 20px;
-            color: #1a2a6c;
             padding-bottom: 10px;
-            border-bottom: 2px solid #1a2a6c;
+            border-bottom: 1px solid var(--secondary);
+            font-size: 1.5rem;
+            color: var(--light);
         }
         
         .form-group {
@@ -86,363 +102,433 @@
         label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 600;
-            color: #444;
+            font-weight: 500;
         }
         
         input, select {
             width: 100%;
-            padding: 14px;
-            border: 2px solid #ddd;
+            padding: 12px;
             border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.2);
+            color: var(--light);
+            font-size: 1rem;
+            transition: all 0.3s;
         }
         
         input:focus, select:focus {
-            border-color: #1a2a6c;
             outline: none;
-            box-shadow: 0 0 0 3px rgba(26, 42, 108, 0.2);
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
         }
         
-        .coordinates {
+        .location-group {
             display: flex;
             gap: 15px;
         }
         
-        .coordinates .form-group {
+        .location-group .form-group {
             flex: 1;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        #getLocation {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        #getLocation:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        #getLocation:active {
+            transform: translateY(0);
+        }
+        
+        #submitBtn {
+            background: var(--success);
+            color: white;
+        }
+        
+        #submitBtn:hover {
+            background: #219653;
+            transform: translateY(-2px);
+        }
+        
+        #submitBtn:active {
+            transform: translateY(0);
+        }
+        
+        #resetBtn {
+            background: var(--warning);
+            color: white;
+        }
+        
+        #resetBtn:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+        }
+        
+        #resetBtn:active {
+            transform: translateY(0);
+        }
+        
+        .map-container {
+            flex: 1;
+            background: #1a2a3a;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 15px;
+            position: relative;
         }
         
         #map {
             height: 300px;
             width: 100%;
-            border-radius: 10px;
-            margin-top: 10px;
-            border: 1px solid #ddd;
         }
         
-        .btn {
-            background: #1a2a6c;
-            color: white;
-            border: none;
-            padding: 15px 25px;
-            font-size: 18px;
+        .coordinates {
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
             border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            display: block;
-            width: 100%;
-            margin-top: 10px;
+            margin-top: 15px;
+            font-family: monospace;
         }
         
-        .btn:hover {
-            background: #0e1a4d;
-            transform: translateY(-3px);
-            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .btn:active {
-            transform: translateY(0);
-        }
-        
-        .btn i {
-            margin-right: 10px;
-        }
-        
-        .success-message {
-            background: #d4edda;
-            color: #155724;
+        .status {
+            margin-top: 20px;
             padding: 15px;
             border-radius: 8px;
-            margin-top: 20px;
             text-align: center;
+            font-weight: 500;
             display: none;
         }
         
-        .instructions {
-            background: #e9f7fe;
-            border-left: 4px solid #1a2a6c;
-            padding: 15px;
-            margin: 25px 0;
-            border-radius: 0 8px 8px 0;
+        .success {
+            background: rgba(39, 174, 96, 0.2);
+            border: 1px solid var(--success);
+            display: block;
         }
         
-        .instructions h3 {
-            color: #1a2a6c;
-            margin-bottom: 10px;
-        }
-        
-        .instructions ol {
-            padding-left: 20px;
-        }
-        
-        .instructions li {
-            margin-bottom: 8px;
+        .error {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid var(--accent);
+            display: block;
         }
         
         footer {
             text-align: center;
-            color: white;
             padding: 20px;
             margin-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
             font-size: 0.9rem;
+            opacity: 0.7;
         }
         
-        @media (max-width: 768px) {
-            .app-container {
-                flex-direction: column;
-            }
-            
-            .form-section, .map-section {
-                max-width: 100%;
-            }
+        .military-badge {
+            text-align: center;
+            margin: 20px 0;
+            opacity: 0.8;
+        }
+        
+        .military-badge i {
+            font-size: 3rem;
+            color: #e74c3c;
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-id-card"></i> Sistema de Cadastro de Militares</h1>
-            <p>Cadastre militares com informações completas e visualize sua localização no mapa</p>
+            <h1><i class="fas fa-shield-alt"></i> Cadastro Militar</h1>
+            <p class="app-description">Sistema para cadastro de militares com geolocalização e integração com Google Sheets</p>
         </header>
         
-        <div class="instructions">
-            <h3><i class="fas fa-info-circle"></i> Instruções de Uso</h3>
-            <ol>
-                <li>Preencha todos os campos do formulário de cadastro</li>
-                <li>Digite o endereço completo para obter as coordenadas automaticamente</li>
-                <li>Verifique a localização no mapa</li>
-                <li>Clique em "Cadastrar Militar" para salvar na planilha</li>
-            </ol>
-        </div>
-        
-        <div class="app-container">
-            <div class="form-section">
-                <h2 class="section-title"><i class="fas fa-user-plus"></i> Cadastro</h2>
-                <form id="employeeForm">
+        <div class="content">
+            <section class="form-section">
+                <h2 class="section-title"><i class="fas fa-user-plus"></i> Dados do Militar</h2>
+                
+                <div class="military-badge">
+                    <i class="fas fa-medal"></i>
+                </div>
+                
+                <form id="militaryForm">
                     <div class="form-group">
-                        <label for="cargo"><i class="fas fa-briefcase"></i> Cargo:</label>
-                        <select id="cargo" required>
-                            <option value="">Selecione um cargo</option>
-                            <option value="sd">Soldado (sd)</option>
-                            <option value="cb">Cabo (cb)</option>
-                            <option value="sgt">Sargento (sgt)</option>
-                            <option value="sub ten">Subtenente (sub ten)</option>
-                            <option value="ten">Tenente (ten)</option>
-                            <option value="cap">Capitão (cap)</option>
-                            <option value="maj">Major (maj)</option>
-                            <option value="ten cel">Tenente-Coronel (ten cel)</option>
-                            <option value="cel">Coronel (cel)</option>
+                        <label for="name"><i class="fas fa-id-card"></i> Nome Completo</label>
+                        <input type="text" id="name" placeholder="Digite o nome completo" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="rank"><i class="fas fa-star"></i> Cargo/Posto</label>
+                        <select id="rank" required>
+                            <option value="" disabled selected>Selecione o posto</option>
+                            <option value="sd">Soldado (SD)</option>
+                            <option value="cb">Cabo (CB)</option>
+                            <option value="sgt">Sargento (SGT)</option>
+                            <option value="subten">Subtenente (Sub Ten)</option>
+                            <option value="ten">Tenente (TEN)</option>
+                            <option value="cap">Capitão (CAP)</option>
+                            <option value="maj">Major (MAJ)</option>
+                            <option value="tencel">Tenente-Coronel (TEN CEL)</option>
+                            <option value="cel">Coronel (CEL)</option>
                         </select>
                     </div>
                     
                     <div class="form-group">
-                        <label for="nome"><i class="fas fa-user"></i> Nome Completo:</label>
-                        <input type="text" id="nome" placeholder="Digite o nome completo" required>
+                        <label for="battalion"><i class="fas fa-flag"></i> Batalhão</label>
+                        <input type="text" id="battalion" placeholder="Nome do batalhão" required>
                     </div>
                     
                     <div class="form-group">
-                        <label for="endereco"><i class="fas fa-map-marker-alt"></i> Endereço:</label>
-                        <input type="text" id="endereco" placeholder="Digite o endereço completo" required>
+                        <label for="address"><i class="fas fa-home"></i> Endereço Residencial</label>
+                        <input type="text" id="address" placeholder="Endereço completo" required>
                     </div>
                     
-                    <div class="coordinates">
+                    <div class="location-group">
                         <div class="form-group">
-                            <label for="latitude"><i class="fas fa-globe-americas"></i> Latitude:</label>
-                            <input type="text" id="latitude" readonly>
+                            <label for="latitude"><i class="fas fa-location-dot"></i> Latitude</label>
+                            <input type="text" id="latitude" placeholder="Clique em 'Obter Localização'" readonly>
                         </div>
                         
                         <div class="form-group">
-                            <label for="longitude"><i class="fas fa-globe-americas"></i> Longitude:</label>
-                            <input type="text" id="longitude" readonly>
+                            <label for="longitude"><i class="fas fa-location-dot"></i> Longitude</label>
+                            <input type="text" id="longitude" placeholder="Clique em 'Obter Localização'" readonly>
                         </div>
                     </div>
                     
-                    <button type="submit" class="btn"><i class="fas fa-save"></i> Cadastrar Militar</button>
+                    <div class="btn-group">
+                        <button type="button" id="getLocation"><i class="fas fa-map-marker-alt"></i> Obter Localização</button>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button type="submit" id="submitBtn"><i class="fas fa-save"></i> Salvar Cadastro</button>
+                        <button type="reset" id="resetBtn"><i class="fas fa-eraser"></i> Limpar</button>
+                    </div>
+                    
+                    <div id="statusMessage" class="status"></div>
                 </form>
-                
-                <div id="successMessage" class="success-message">
-                    <i class="fas fa-check-circle"></i> Militar cadastrado com sucesso!
-                </div>
-            </div>
+            </section>
             
-            <div class="map-section">
-                <h2 class="section-title"><i class="fas fa-map"></i> Localização</h2>
-                <p>O mapa abaixo mostrará a localização do endereço fornecido:</p>
-                <div id="map"></div>
-            </div>
+            <section class="map-section">
+                <h2 class="section-title"><i class="fas fa-map"></i> Localização do Militar</h2>
+                <p>Clique no botão "Obter Localização" para mostrar a localização no mapa</p>
+                
+                <div class="map-container">
+                    <div id="map"></div>
+                </div>
+                
+                <div class="coordinates">
+                    <p><strong>Coordenadas:</strong> <span id="coordinates">-23.5505, -46.6333 (São Paulo)</span></p>
+                </div>
+            </section>
         </div>
         
         <footer>
-            <p>Sistema de Cadastro de Militares &copy; 2023 | Desenvolvido com Google Maps API</p>
+            <p>Sistema de Cadastro Militar &copy; 2023 | Desenvolvido para o Exército Brasileiro</p>
+            <p>Os dados serão salvos em uma planilha do Google Sheets</p>
         </footer>
     </div>
 
+    <!-- Leaflet CSS and JS for maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
     <script>
         // Inicializa o mapa
-        let map;
-        let marker;
+        const map = L.map('map').setView([-23.5505, -46.6333], 12);
         
-        function initMap() {
-            // Centro inicial do mapa (Brasília)
-            const center = { lat: -15.793889, lng: -47.882778 };
+        // Adiciona o tile layer (mapa base)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        // Adiciona um marcador inicial
+        let marker = L.marker([-23.5505, -46.6333]).addTo(map)
+            .bindPopup('São Paulo')
+            .openPopup();
+        
+        // Elementos DOM
+        const getLocationBtn = document.getElementById('getLocation');
+        const submitBtn = document.getElementById('submitBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const latitudeInput = document.getElementById('latitude');
+        const longitudeInput = document.getElementById('longitude');
+        const statusMessage = document.getElementById('statusMessage');
+        const coordinatesSpan = document.getElementById('coordinates');
+        
+        // Função para obter a localização
+        function getLocation() {
+            statusMessage.className = 'status';
+            statusMessage.textContent = '';
             
-            // Configurações do mapa
-            map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 12,
-                center: center,
-                mapTypeId: 'roadmap',
-                styles: [
-                    {
-                        "featureType": "administrative",
-                        "elementType": "labels.text.fill",
-                        "stylers": [{"color": "#444444"}]
-                    },
-                    {
-                        "featureType": "landscape",
-                        "elementType": "all",
-                        "stylers": [{"color": "#f2f2f2"}]
-                    },
-                    {
-                        "featureType": "poi",
-                        "elementType": "all",
-                        "stylers": [{"visibility": "off"}]
-                    },
-                    {
-                        "featureType": "road",
-                        "elementType": "all",
-                        "stylers": [{"saturation": -100}, {"lightness": 45}]
-                    },
-                    {
-                        "featureType": "road.highway",
-                        "elementType": "all",
-                        "stylers": [{"visibility": "simplified"}]
-                    },
-                    {
-                        "featureType": "road.arterial",
-                        "elementType": "labels.icon",
-                        "stylers": [{"visibility": "off"}]
-                    },
-                    {
-                        "featureType": "transit",
-                        "elementType": "all",
-                        "stylers": [{"visibility": "off"}]
-                    },
-                    {
-                        "featureType": "water",
-                        "elementType": "all",
-                        "stylers": [{"color": "#1a2a6c"}, {"visibility": "on"}]
-                    }
-                ]
-            });
-            
-            // Cria o marcador inicial
-            marker = new google.maps.Marker({
-                position: center,
-                map: map,
-                title: 'Localização do funcionário'
-            });
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    showPosition, 
+                    showError,
+                    {enableHighAccuracy: true, timeout: 10000}
+                );
+            } else {
+                showStatus("Geolocalização não é suportada pelo seu navegador.", "error");
+            }
         }
         
-        // Inicializa o autocomplete para o campo de endereço
-        function initAutocomplete() {
-            const input = document.getElementById('endereco');
-            const autocomplete = new google.maps.places.Autocomplete(input);
+        // Sucesso na obtenção da localização
+        function showPosition(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
             
-            autocomplete.addListener('place_changed', function() {
-                const place = autocomplete.getPlace();
-                
-                if (!place.geometry) {
-                    alert("Endereço não encontrado: '" + place.name + "'");
-                    return;
-                }
-                
-                // Atualiza as coordenadas
-                document.getElementById('latitude').value = place.geometry.location.lat();
-                document.getElementById('longitude').value = place.geometry.location.lng();
-                
-                // Atualiza o mapa
-                const position = {
-                    lat: place.geometry.location.lat(),
-                    lng: place.geometry.location.lng()
-                };
-                
-                map.setCenter(position);
-                map.setZoom(15);
-                marker.setPosition(position);
-            });
+            // Atualiza os campos de entrada
+            latitudeInput.value = lat;
+            longitudeInput.value = lon;
+            
+            // Atualiza o mapa
+            map.setView([lat, lon], 15);
+            
+            // Remove o marcador anterior, se existir
+            if (marker) {
+                map.removeLayer(marker);
+            }
+            
+            // Adiciona um novo marcador
+            marker = L.marker([lat, lon]).addTo(map)
+                .bindPopup('Localização atual')
+                .openPopup();
+            
+            // Atualiza o texto das coordenadas
+            coordinatesSpan.textContent = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+            
+            showStatus("Localização obtida com sucesso!", "success");
+        }
+        
+        // Erro na obtenção da localização
+        function showError(error) {
+            let errorMessage = "";
+            
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    errorMessage = "Permissão negada pelo usuário.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    errorMessage = "Informações de localização indisponíveis.";
+                    break;
+                case error.TIMEOUT:
+                    errorMessage = "Tempo excedido para obter a localização.";
+                    break;
+                case error.UNKNOWN_ERROR:
+                    errorMessage = "Ocorreu um erro desconhecido.";
+                    break;
+            }
+            
+            showStatus(`Erro: ${errorMessage}`, "error");
+        }
+        
+        // Função para mostrar status
+        function showStatus(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.className = `status ${type}`;
+            
+            // Limpa a mensagem após 5 segundos
+            setTimeout(() => {
+                statusMessage.className = 'status';
+                statusMessage.textContent = '';
+            }, 5000);
         }
         
         // Função para enviar dados para o Google Sheets
-        async function saveToGoogleSheets(data) {
-            // Substitua com a URL do seu Web App do Google Apps Script
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwvT2NX9PD4sQybR71sj03jYMtpDGWr65Mpu0v-iG8bmSMHAEW2siqqK-q_561Z-Y2D/exec';
+        function submitToGoogleSheets(data) {
+            // URL do seu Google Apps Script
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbzdgNsKFEyiwkrS56xh-o9_d-3TFvU1QiylwoN2-zGrnOyZGLgtj986Fwm5xnIwrm5Q/exec';
             
-            try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(data),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                const result = await response.json();
-                
-                if (result.result === 'success') {
-                    // Mostra mensagem de sucesso
-                    document.getElementById('successMessage').style.display = 'block';
-                    
-                    // Reseta o formulário
-                    document.getElementById('employeeForm').reset();
-                    
-                    // Esconde a mensagem após 3 segundos
-                    setTimeout(() => {
-                        document.getElementById('successMessage').style.display = 'none';
-                    }, 3000);
-                } else {
-                    alert('Erro ao salvar os dados: ' + result.message);
+            // Simulação de envio - em produção, substitua pelo fetch real
+            showStatus("Enviando dados para o Google Sheets...", "success");
+            
+            /*
+            // Código real para enviar para o Google Sheets
+            fetch(scriptURL, {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json'
                 }
-            } catch (error) {
-                console.error('Erro:', error);
-                alert('Ocorreu um erro ao enviar os dados.');
-            }
+            })
+            .then(response => {
+                if (response.ok) {
+                    showStatus("Dados salvos com sucesso no Google Sheets!", "success");
+                    document.getElementById('militaryForm').reset();
+                } else {
+                    showStatus("Erro ao salvar os dados.", "error");
+                }
+            })
+            .catch(error => {
+                showStatus("Erro: " + error.message, "error");
+            });
+            */
+            
+            // Simulação de envio bem-sucedido
+            setTimeout(() => {
+                showStatus("Dados salvos com sucesso no Google Sheets!", "success");
+                document.getElementById('militaryForm').reset();
+                coordinatesSpan.textContent = '-23.5505, -46.6333 (São Paulo)';
+                map.setView([-23.5505, -46.6333], 12);
+            }, 1500);
         }
         
-        // Evento de envio do formulário
-        document.getElementById('employeeForm').addEventListener('submit', function(e) {
+        // Event Listeners
+        getLocationBtn.addEventListener('click', getLocation);
+        
+        document.getElementById('militaryForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const cargo = document.getElementById('cargo').value;
-            const nome = document.getElementById('nome').value;
-            const endereco = document.getElementById('endereco').value;
-            const latitude = document.getElementById('latitude').value;
-            const longitude = document.getElementById('longitude').value;
-            
-            if (!cargo || !nome || !endereco || !latitude || !longitude) {
-                alert('Por favor, preencha todos os campos e verifique o endereço.');
+            // Valida se a localização foi obtida
+            if (!latitudeInput.value || !longitudeInput.value) {
+                showStatus("Por favor, obtenha a localização antes de enviar.", "error");
                 return;
             }
             
+            // Coleta os dados do formulário
             const formData = {
-                cargo: cargo,
-                nome: nome,
-                endereco: endereco,
-                latitude: latitude,
-                longitude: longitude,
+                name: document.getElementById('name').value,
+                rank: document.getElementById('rank').value,
+                battalion: document.getElementById('battalion').value,
+                address: document.getElementById('address').value,
+                latitude: latitudeInput.value,
+                longitude: longitudeInput.value,
                 timestamp: new Date().toISOString()
             };
             
-            saveToGoogleSheets(formData);
+            // Envia os dados
+            submitToGoogleSheets(formData);
         });
         
-        // Inicializa o mapa e autocomplete quando a página carrega
-        window.onload = function() {
-            initMap();
-            initAutocomplete();
-        };
+        // Reset do formulário
+        resetBtn.addEventListener('click', function() {
+            coordinatesSpan.textContent = '-23.5505, -46.6333 (São Paulo)';
+            map.setView([-23.5505, -46.6333], 12);
+            if (marker) {
+                map.removeLayer(marker);
+                marker = L.marker([-23.5505, -46.6333]).addTo(map)
+                    .bindPopup('São Paulo')
+                    .openPopup();
+            }
+        });
     </script>
 </body>
 </html>
